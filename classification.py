@@ -8,6 +8,12 @@ from urllib.request import urlopen
 import requests
 from io import BytesIO
 
+sp = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+
+facerec = dlib.face_recognition_model_v1('dlib_face_recognition_resnet_model_v1.dat')
+
+detector = dlib.get_frontal_face_detector()
+
 def read_sqlite_table():
     try:
         f = []
@@ -26,10 +32,7 @@ def read_sqlite_table():
             sqlite_connection.close()
     return f
 
-def face_Descriptor(img):
-    sp = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
-    facerec = dlib.face_recognition_model_v1('dlib_face_recognition_resnet_model_v1.dat')
-    detector = dlib.get_frontal_face_detector()
+def face_Descriptor(img, sp, facerec, detector):
 
     dets = detector(img, 1)
     for k, d in enumerate(dets):

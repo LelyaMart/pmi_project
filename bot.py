@@ -7,7 +7,7 @@ from PIL import Image
 from csvutil import *
 import csv
 from face_number import face_number
-from ourToken import TOKEN
+from tryToken import TOKEN
 
 token = TOKEN
 bot = telebot.TeleBot(token)

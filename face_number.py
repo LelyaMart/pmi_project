@@ -1,7 +1,7 @@
 import requests
 from skimage import io
 from io import BytesIO
-import face_recognition as fr
+import api as fr
 
 def face_number(path):
     try:

@@ -8,7 +8,7 @@ def clas(src):
     except:
         imag = io.imread(src)
 
-    x = face_Descriptor(imag)
+    x = face_Descriptor(imag, sp, facerec, detector)
 
     f = read_sqlite_table()
 
