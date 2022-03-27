@@ -8,6 +8,8 @@ from csvutil import *
 import csv
 from face_number import face_number
 from tryToken import TOKEN
+from db import top, update_results, update_users
+
 
 token = TOKEN
 bot = telebot.TeleBot(token)
@@ -20,11 +22,9 @@ markup.add(button_info, button_top)
 
 def write_top(message):
     text = "Топ 5 часто выдаваемых преподавателей:\n"
-    with open('top.csv') as topfile:
-        array = [r for r in csv.reader(topfile, delimiter=' ')]
-        array.pop(0)
-        for i in range(5):
-            text = text + array[i][0] + " - " + array[i][1] + " (совпадений)\n"
+    data = top()
+    for i in data:
+        text = text + str(i[0]) + " - " + str(i[1]) + " (совпадений)\n"
     bot.send_message(message.chat.id, text)
 
 @bot.message_handler(commands=['start'])
@@ -61,7 +61,7 @@ def getPhoto(message):
             imag = Image.open(BytesIO(imag))
             bot.send_photo(message.from_user.id, imag, caption = "Преподаватель, который больше всего похож на человека с фото: " + x[2] + "\n" + x[4])
             bot.send_message(message.from_user.id, "Вот что я смог найти) Ты можешь отправить мне новую фотографию или проверить топ")
-            write_result_to_csv(result)
+            update_results(result)
         except Exception as e:
             print(e)
             bot.send_message(message.from_user.id, "Ой, я не нашёл твоё лицо( Отправь мне другую фотографию")
@@ -69,7 +69,7 @@ def getPhoto(message):
     else:
         bot.send_message(message.from_user.id, 'На этой фотографии больше одного человека. Пожалуйста, отправь другое фото или обрежь это.')
         result = -1
-    write_id_to_csv(user_id, username, result)
+    update_users(user_id, username, result)
 
 
 def main():
