@@ -61,7 +61,6 @@ def update_users(user_id, username, result):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
     data = cursor.fetchall()
-    print(data)
     if len(data) == 0:
         if result != -1:
             cursor.execute("INSERT INTO users (user_id, username, results, US_result, S_result) VALUES ( ?, ?, ?, ?, ?);" , (user_id, username, 1, 0, 1, )) 
