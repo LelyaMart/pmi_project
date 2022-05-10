@@ -1,0 +1,27 @@
+import api as fr
+from classification import *
+from io import BytesIO
+from skimage import io
+import requests
+
+def clas(src):
+    try:
+        imag = requests.get(src).content
+        imag = BytesIO(imag)
+    except:
+        imag = io.imread(src)
+
+    imag = fr.load_image_file(imag)
+
+    x = face_Descriptor(imag, sp, facerec, detector)
+
+    f = read_sqlite_table()
+
+    scores = np.linalg.norm(x - np.asarray(f), axis=1)
+    min_el_ind = scores.argmin()
+
+    return print_src(min_el_ind)
+
+
+if __name__ == '__main__':
+    print(clas(input()))
