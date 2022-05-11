@@ -1,12 +1,11 @@
 import csv
 import sqlite3
 
-conn = sqlite3.connect('statistic.db')
+conn = sqlite3.connect('statistic.db', check_same_thread=False)
 cursor = conn.cursor()
 
 
 def make_db():
-    global cursor
     text = '''CREATE TABLE users (
         user_id INTEGER,
         username TEXT,

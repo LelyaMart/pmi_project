@@ -1,23 +1,14 @@
-from io import BytesIO
-
-import requests
-from skimage import io
-
-import api as fr
+import api
 
 
-def face_number(path):
+def face_number(image_numpy_array):
+    face_count = 0
     try:
-        imag = requests.get(path).content
-        imag = BytesIO(imag)
-    except:
-        imag = io.imread(path)
-
-    img = fr.load_image_file(imag)
-    face_loc = fr.face_locations(img)
-    faces_number = len(face_loc)
-
-    return faces_number
+        face_locations = api.face_locations(image_numpy_array)
+        face_count = len(face_locations)
+    except Exception as e:  # фото не распознано
+        print(e)
+    return face_count
 
 
 if __name__ == '__main__':

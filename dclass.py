@@ -1,20 +1,8 @@
-import api as fr
 from classification import *
-from io import BytesIO
-from skimage import io
-import requests
 
-def clas(src):
-    try:
-        imag = requests.get(src).content
-        imag = BytesIO(imag)
-    except:
-        imag = io.imread(src)
 
-    imag = fr.load_image_file(imag)
-
-    x = face_Descriptor(imag, sp, facerec, detector)
-
+def clas(image_numpy_array):
+    x = face_Descriptor(image_numpy_array, sp, facerec, detector)
     f = read_sqlite_table()
 
     scores = np.linalg.norm(x - np.asarray(f), axis=1)
