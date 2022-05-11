@@ -1,20 +1,15 @@
-import requests
-from skimage import io
-from io import BytesIO
-import api as fr
+import api
 
-def face_number(path):
+
+def face_number(image_numpy_array):
+    face_count = 0
     try:
-        imag = requests.get(path).content
-        imag = BytesIO(imag)
-    except:
-        imag = io.imread(path)
+        face_locations = api.face_locations(image_numpy_array)
+        face_count = len(face_locations)
+    except Exception as e:  # фото не распознано
+        print(e)
+    return face_count
 
-    img = fr.load_image_file(imag)
-    face_loc = fr.face_locations(img)
-    faces_number = len(face_loc)
-
-    return faces_number
 
 if __name__ == '__main__':
     print(face_number('https://upload.wikimedia.org/wikipedia/commons/4/41/Siberischer_tiger_de_edit02.jpg'))
