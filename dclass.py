@@ -1,9 +1,9 @@
 from classification import *
 
 
-def clas(image_numpy_array):
+def clas(image_numpy_array, gender):
     x = face_Descriptor(image_numpy_array, sp, facerec, detector)
-    f = read_sqlite_table()
+    f = read_sqlite_table(gender)
 
     scores = np.linalg.norm(x - np.asarray(f), axis=1)
     min_el_ind = scores.argmin()

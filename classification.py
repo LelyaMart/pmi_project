@@ -10,13 +10,17 @@ facerec = dlib.face_recognition_model_v1('dlib_face_recognition_resnet_model_v1.
 detector = dlib.get_frontal_face_detector()
 
 
-def read_sqlite_table():
+def read_sqlite_table(gender):
     sqlite_connection = sqlite3.connect('teachers4.db')
     cursor = sqlite_connection.cursor()
     try:
         f = []
-        sqlite_select_query = """SELECT * from teachers"""
-        cursor.execute(sqlite_select_query)
+        if(gender != "error"):
+            sqlite_select_query = """SELECT * from teachers WHERE WM=?"""
+            cursor.execute(sqlite_select_query, (gender,))
+        else:
+            sqlite_select_query = """SELECT * from teachers"""
+            cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
         for row in records:
             x = row[3].split('\n')

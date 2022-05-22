@@ -1,8 +1,11 @@
 import cv2
+import numpy
 import numpy as np
 
 # The gender model architecture
 # https://drive.google.com/open?id=1W_moLzMlGiELyPxWiYQJ9KFaXroQ_NFQ
+import requests
+
 GENDER_MODEL = 'deploy_gender.prototxt'
 # The gender model pre-trained weights
 # https://drive.google.com/open?id=1AW3WduLk1haTVAxHOkVS_BEzel1WXQHP
@@ -94,28 +97,14 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
     # resize the image
     return cv2.resize(image, dim, interpolation = inter)
 
-def predict_gender(input_path: str):
-    """Predict the gender of the faces showing in the image"""
-    # Read Input Image
-    from skimage import io
-    img = io.imread(input_path)
-    # resize the image, uncomment if you want to resize the image
-    # img = cv2.resize(img, (frame_width, frame_height))
-    # Take a copy of the initial image and resize it
+def predict_gender(img):
     frame = img.copy()
     if frame.shape[1] > 1000:
         frame = image_resize(frame, width=1000)
     # predict the faces
     faces = get_faces(frame)
-    # Loop over the faces detected
-    # for idx, face in enumerate(faces):
     for i, (start_x, start_y, end_x, end_y) in enumerate(faces):
         face_img = frame[start_y: end_y, start_x: end_x]
-        # image --> Input image to preprocess before passing it through our dnn for classification.
-        # scale factor = After performing mean substraction we can optionally scale the image by some factor. (if 1 -> no scaling)
-        # size = The spatial size that the CNN expects. Options are = (224*224, 227*227 or 299*299)
-        # mean = mean substraction values to be substracted from every channel of the image.
-        # swapRB=OpenCV assumes images in BGR whereas the mean is supplied in RGB. To resolve this we set swapRB to True.
         blob = cv2.dnn.blobFromImage(image=face_img, scalefactor=1.0, size=(
             227, 227), mean=MODEL_MEAN_VALUES, swapRB=False, crop=False)
         # Predict Gender
@@ -123,24 +112,10 @@ def predict_gender(input_path: str):
         gender_preds = gender_net.forward()
         i = gender_preds[0].argmax()
         gender = GENDER_LIST[i]
-        #gender_confidence_score = gender_preds[0][i]
-        # Draw the box
-        #label = "{}-{:.2f}%".format(gender, gender_confidence_score*100)
         return gender
-        # yPos = start_y - 15
-        # while yPos < 15:
-        #     yPos += 15
-        # # get the font scale for this image size
-        # optimal_font_scale = get_optimal_font_scale(label,((end_x-start_x)+25))
-        # box_color = (255, 0, 0) if gender == "Male" else (147, 20, 255)
-        # cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), box_color, 2)
-        # # Label processed image
-        # cv2.putText(frame, label, (start_x, yPos),
-        #             cv2.FONT_HERSHEY_SIMPLEX, optimal_font_scale, box_color, 2)
 
-        # Display processed image
-    # display_img("Gender Estimator", frame)
-    # # uncomment if you want to save the image
-    # # cv2.imwrite("output.jpg", frame)
-    # # Cleanup
-    # cv2.destroyAllWindows()
+if __name__ == '__main__':
+    url = "https://home.mephi.ru/system/users/avatars/000/014/697/medium/IMG_2062-01-10-18-12-34.JPG?1634728062"
+    from skimage import io
+    img = io.imread(url)
+

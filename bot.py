@@ -1,16 +1,20 @@
 import asyncio
 from io import BytesIO
 
+import cv2
+import numpy as np
 import requests
 from PIL import Image
 from telebot.async_telebot import AsyncTeleBot  # нужна последняя версия pyTelegramBotAPI
 from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton
 
 import api
+from wm import predict_gender
 from db import top, update_results, update_users
 from dclass import clas
 from face_number import face_number
-from ourToken import TOKEN
+from tryToken import TOKEN
+from wm import predict_gender
 
 token = TOKEN
 bot = AsyncTeleBot(token)
@@ -41,7 +45,14 @@ async def newPhoto(message: Message):
         await bot.reply_to(message, "Ой, я не нашёл твоё лицо( Отправь мне другую фотографию")
     elif face_count == 1:
         try:
-            row_data = clas(image_numpy_array)
+            file_bytes = np.asarray(image_numpy_array, dtype=np.uint8)
+            img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+            gender = "error"
+            try:
+                gender = predict_gender(img)
+            except(Exception):
+                print(Exception)
+            row_data = clas(image_numpy_array, gender)
             result = row_data[2]
             teacher_image_url = row_data[1]
             teacher_image = Image.open(BytesIO(requests.get(teacher_image_url).content))
@@ -74,8 +85,7 @@ async def start_message(message):
 @bot.message_handler(content_types=['text', 'entities', 'audio', 'document', 'sticker', 'video', 'voice', 'caption', 'contact', 'location', 'venue', 'video_note'])
 async def get_text_messages(message):
     if message.text == 'Info':
-        await bot.send_message(message.from_user.id,
-                               "Я - бот похожих преподавателей НИЯУ МИФИ. Если ты отправишь мне фотографию, то в ответ получишь того сотрудника нашего института, который больше всего похож на тебя. Алгоритм является экспериментальным, поэтому я могу иногда ошибаться. Также ты можешь посмотреть, какие из преподавателей встречаются чаще всего. Для этого отправь мне сообщение 'Топ преподавателей'")
+        await bot.send_message(message.from_user.id, "Я - бот похожих преподавателей НИЯУ МИФИ. Если ты отправишь мне фотографию, то в ответ получишь того сотрудника нашего института, который больше всего похож на тебя. Алгоритм является экспериментальным, поэтому я могу иногда ошибаться. Также ты можешь посмотреть, какие из преподавателей встречаются чаще всего. Для этого отправь мне сообщение 'Топ преподавателей'")
     elif message.text == 'Топ преподавателей':
         await write_top(message)
     else:
