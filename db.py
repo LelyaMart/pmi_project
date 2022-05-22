@@ -89,6 +89,15 @@ def check():
     for i in data:
         print("sd", i)
 
+def wm():
+    from wm import predict_gender
+    conn1 = sqlite3.connect("teachers4.db", check_same_thread = False)
+    cursor1 = conn1.cursor()
+    #cursor.execute("ALTER TABLE "
+    cursor1.execute("SELECT * FROM teachers WHERE 1")
+    data = cursor1.fetchall()
+    print(predict_gender(data[1]))
 
 if __name__ == '__main__':
-    check()
+    cursor.execute("SELECT * FROM results")
+    print(cursor.fetchall())

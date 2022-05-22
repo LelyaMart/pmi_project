@@ -10,7 +10,7 @@ import api
 from db import top, update_results, update_users
 from dclass import clas
 from face_number import face_number
-from tryToken import TOKEN
+from ourToken import TOKEN
 
 token = TOKEN
 bot = AsyncTeleBot(token)
